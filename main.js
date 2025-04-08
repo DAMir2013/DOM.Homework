@@ -62,11 +62,15 @@
 
 // После кооментирую, чтобы работать сразу с localStorage;
 
+
+//цвет текста кнопки записаться, если есть место то зеленая, иначе красная
 const idValueClassFull = 'text-danger';
 const normalValueClass = 'text-success';
 
+
 const classContainer = document.querySelector('.class-container');
 
+// функция обновления данных
 function updatingData() {
     const data = JSON.parse(localStorage.getItem('classArray'));
     return data;
@@ -75,13 +79,17 @@ function updatingData() {
 
 
 function fillingPage() {
+    // обновляю данные - получая массив
     const data = updatingData();
-
+    // пробегаюсь по массиву чтобы визуализировать данные на странице
     data.forEach((item, index) => {
-        let classEmptyOrFull = normalValueClass;
+        let classEmptyOrFull = normalValueClass;// нормальный цвет кнопки записаться
+
+        // проверка свободных мест
         if (item.numberParticipants === item.maxValue) {
+            //если мест нет цвет текста красный
             classEmptyOrFull = idValueClassFull;
-        }
+        }// создается карточка с данными для определенного вида спорта и заполняется из массива
         const containerTypeSport = document.createElement('div');
         containerTypeSport.classList.add('col-4', 'myClassSportContainer', 'border', 'border-2', 'border-info');
         containerTypeSport.id = `num${index}`;
@@ -95,8 +103,11 @@ function fillingPage() {
         const realQuantity = document.createElement('p');
         realQuantity.innerHTML = `<p>Количество записанных участников: <span class="${classEmptyOrFull}">${item.numberParticipants}</span></p>`;
 
+
+        // кнопка записаться
         const signUpBtn = document.createElement('button');
         signUpBtn.classList.add(classEmptyOrFull);
+        // зависимость текста в кнопке в зависимости от наличия свободных мест
         if (classEmptyOrFull === 'text-danger') {
             signUpBtn.setAttribute('disabled', '');
             signUpBtn.textContent = 'Мест нет';
@@ -104,11 +115,13 @@ function fillingPage() {
             signUpBtn.textContent = 'Записаться';
         }
 
-
+        //кнопка отмены записи
         const cancelRecordingBtn = document.createElement('button');
         cancelRecordingBtn.classList.add('text-primary');
         cancelRecordingBtn.textContent = 'Отменить запись';
 
+
+        //добавление элементов на страницу
         classContainer.appendChild(containerTypeSport);
         containerTypeSport.appendChild(typeofSport);
         containerTypeSport.appendChild(time);
@@ -117,24 +130,28 @@ function fillingPage() {
         containerTypeSport.appendChild(signUpBtn);
         containerTypeSport.appendChild(cancelRecordingBtn);
 
-
+        // навешиваю обработчики событий на кнопки
         signUpBtn.addEventListener('click', (e) => {
+            //получаю позицию изменяемого элемента в массиве
             const position = Number(e.target.closest('div').id.slice(3));
+            // увеличиваю кол-во запиисавшихся
             if (data[position].numberParticipants < data[position].maxValue) {
                 data[position].numberParticipants++;
             }
-
+            //обновляю данные в хранилище и вывожу изменения на страницу
             localStorage.setItem('classArray', JSON.stringify(data));
             classContainer.innerHTML = '';
             fillingPage();
         });
 
         cancelRecordingBtn.addEventListener('click', (e) => {
+            //получаю позицию изменяемого элемента в массиве
             const position = Number(e.target.closest('div').id.slice(3));
+            // уменьшаю кол-во запиисавшихся
             if (data[position].numberParticipants > 0) {
                 data[position].numberParticipants--;
             }
-
+            //обновляю данные в хранилище и вывожу изменения на страницу
             localStorage.setItem('classArray', JSON.stringify(data));
             classContainer.innerHTML = '';
             fillingPage();
